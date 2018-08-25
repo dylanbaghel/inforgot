@@ -1,0 +1,11 @@
+<div class="jumbotron text-center">
+  <h1 class="display-4">Inforgot</h1>
+  <p class="lead">Never Forget Things, Add Private Notes Those are accessible by you only.</p>
+  <hr class="my-4">
+  {{#if user}}
+    <a class="btn btn-primary btn-lg" href="/notes/add" role="button">Add New Note</a>
+  {{else}}
+    <a class="btn btn-success btn-lg" href="/users/login" role="button">Login</a>
+    <a class="btn btn-info btn-lg" href="/users/register" role="button">Register</a>
+  {{/if}}
+</div>

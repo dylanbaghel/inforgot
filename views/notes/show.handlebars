@@ -1,0 +1,13 @@
+<div class="card">
+    <div class="card-header">
+        {{note.title}}
+    </div>
+    <div class="card-body">
+        <div class="card-text mb-3">{{note.note}}</div>
+        <a href="/notes/{{note._id}}/edit" class="btn btn-block btn-dark mb-2">Edit</a>
+        <form action="/notes/{{note._id}}?_method=DELETE" method="POST">
+            <input type="hidden" value="DELETE" name="_method">
+            <button class="btn btn-block btn-danger">Delete</button>
+        </form>
+    </div>
+</div>
