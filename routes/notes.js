@@ -46,7 +46,7 @@ router.post('/', authenticate, (req, res) => {
 router.get('/', authenticate, (req, res) => {
     Note.find({
         _creator: req.user.id
-    }).then((notes) => {
+    }).sort({date: 'desc'}).then((notes) => {
         res.render('notes/notes', {notes});
     }).catch((e) => {
         throw e;

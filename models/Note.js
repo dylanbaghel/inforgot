@@ -13,6 +13,11 @@ let NoteSchema = new mongoose.Schema({
     _creator: {
         type: mongoose.Schema.Types.ObjectId,
         required: true
+    },
+    date: {
+        type: Date,
+        default: Date.now,
+        required: true
     }
 });
 
