@@ -5,7 +5,7 @@
         </div>
         <div class="card-body">
             <div class="card-text mb-3">
-                {{note}}
+                {{truncate note 400 '....'}}
             </div>
             <a href="/notes/{{id}}/show" class="btn btn-dark btn-block">More</a>
         </div>

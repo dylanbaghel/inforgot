@@ -13,8 +13,21 @@ const { mongoose } = require('./db/mongoose');
 const notes = require('./routes/notes');
 const users = require('./routes/users');
 require('./config/passport').passportLocal(passport);
+
+//HANDLEBARS HELPERS
+const truncate = (str, length, ending) => {
+      if (str.length > length) {
+        return str.substring(0, length - ending.length) + ending;
+      } else {
+        return str;
+      }
+};
+
 //MIDDLEWARES
-app.engine('handlebars', exphbs({ defaultLayout: 'main' }));
+app.engine('handlebars', exphbs({
+    helpers: {truncate},
+    defaultLayout: 'main' 
+}));
 app.set('view engine', 'handlebars');
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
