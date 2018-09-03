@@ -3,9 +3,6 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
-const nodemailer = require('nodemailer');
-const crypto = require('crypto');
-const async = require('async');
 //CUSTOM MODULES FILES
 const { User } = require('./../models/User');
 //ROUTES
@@ -105,115 +102,5 @@ router.get('/logout', (req, res) => {
         res.redirect('/users/login');
     });
 });
-
-//GET - /users/forgot - GET FORGOT PASSWORD FORM
-router.get('/forgot', (req, res) => {
-    res.render('users/forgot');
-});
-
-//POST - /users/forgot - SEND USER AN EMAIL
-router.post('/forgot', (req, res, next) => {
-    crypto.randomBytes(20, (err, buf) => {
-        let rand = buf.toString('hex');
-
-        User.findOne({ email: req.body.email }).then((user) => {
-            if (!user) {
-                req.flash('error_msg', "No Account Found With This Email");
-                return res.redirect('/users/forgot');
-            }
-
-            user.passwordResetToken = rand;
-            user.passwordResetExpires = Date.now() + 60*60*1000;
-
-            user.save().then((user) => {
-                
-            });
-
-            let transport = nodemailer.createTransport({
-                host: 'smtp.gmail.com',
-                port: 587,
-                secure: false,
-                service: 'Gmail',
-                auth: {
-                    user: process.env.USER,
-                    pass: process.env.PASS
-                },
-                tls: {
-                    rejectUnauthorized: false
-                }
-            });
-
-            let mailOptions = {
-                to: user.email,
-                from: `Inforgot App <${process.env.USER}>`,
-                subject: 'Password Reset Inforgot App',
-                text: `Your Have Request To Change Your Password By Clicking The Forgot Password Link.Click The Below Link To Change Your Password\n\n http://localhost:4100/users/reset/${rand}`
-            };
-
-            transport.sendMail(mailOptions).then((response) => {
-                req.flash('success_msg', `Password Reset Link Sent To ${user.email}. Check Your Email`);
-                res.redirect('/users/forgot');
-            });
-        })
-    })
-});
-
-//GET  - /users/reset/:token - GET FORM RESET PASSWORD
-router.get('/reset/:token', (req, res) => {
-    User.findOne({
-        passwordResetToken: req.params.token,
-        passwordResetExpires: { $gt: Date.now() }
-    }).then((user) => {
-        if(!user) {
-            req.flash('error_msg', 'Password Reset Token Expired or Invalid.Enter Your Email To Generate token again');
-            return res.redirect('/users/forgot');
-        }
-
-        res.render('users/reset', { token: req.params.token });
-    })
-});
-
-//POST - /users/reset/:token - CHANGE PASSWORD
-router.post('/reset/:token', (req, res) => {
-    let password = req.body.password;
-    let confirmPassword = req.body.confirmPassword;
-
-    if (!password || !confirmPassword) {
-        req.flash('error_msg', 'Password Fields Cannot Be Empty');
-        res.redirect(`/users/reset/${req.params.token}`);
-    } else if (password < 6) {
-        req.flash('error_msg', 'Password Must Be Greater Than 5');
-        res.redirect(`/users/reset/${req.params.token}`);
-    } else if (password !== confirmPassword) {
-        req.flash('error_msg', 'Password Do Not Match');
-        res.redirect(`/users/reset/${req.params.token}`);
-    } else {
-        User.findOne({
-            passwordResetToken: req.params.token,
-            passwordResetExpires: { $gt: Date.now() }
-        }).then((user) => {
-            if (!user) {
-                req.flash('error_msg', 'Password Reset Token Expired or Invalid.Enter Your Email To Generate token again');
-                return res.redirect('/users/forgot');
-            }
-
-            bcrypt.genSalt(10, (err, salt) => {
-                bcrypt.hash(password, salt, (err, hash) => {
-                    if (err) throw err;
-                    user.password = hash;
-                    user.passwordResetToken = undefined;
-                    user.passwordResetExpires = undefined;
-
-                    user.save().then(() => {
-                        req.flash('success_msg', 'Password Changed');
-                        res.redirect('/users/login');
-                    });
-                });
-            });
-        });
-    }
-
-});
-
 
 module.exports = router;
