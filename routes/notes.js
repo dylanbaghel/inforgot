@@ -43,7 +43,7 @@ router.post('/', authenticate, (req, res) => {
 });
 
 //GET - /notes - LIST ALL NOTES
-router.get('/', authenticate, (req, res) => {
+router.get('/', authenticate, (req, res, next) => {
     Note.find({
         _creator: req.user.id
     }).sort({date: 'desc'}).then((notes) => {

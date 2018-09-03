@@ -6,7 +6,9 @@ const app = express();
 const exphbs = require('express-handlebars');
 const methodOverride = require('method-override');
 const flash = require('connect-flash');
+const cookieParser = require('cookie-parser');
 const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
 const passport = require('passport');
 //CUSTOM MODULES FILES
 const { mongoose } = require('./db/mongoose');
@@ -31,10 +33,12 @@ app.engine('handlebars', exphbs({
 app.set('view engine', 'handlebars');
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
+app.use(cookieParser());
 app.use(session({
     secret: 'secret',
-    resave: true,
-    saveUninitialized: true
+    resave: false,
+    saveUninitialized: false,
+    store: new MongoStore({ mongooseConnection: mongoose.connection })
 }));
 app.use(flash());
 app.use(passport.initialize());

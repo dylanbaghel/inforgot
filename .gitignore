@@ -1,2 +1,4 @@
 node_modules/
 inforgot-data/
+playground/
+config/keys.js

@@ -6,3 +6,5 @@ mongoose.connect(process.env.MONGO, { useNewUrlParser: true }).then(() => {
 }).catch((e) => {
     console.log('Mongo Connection Error', e);
 })
+
+module.exports = { mongoose };
