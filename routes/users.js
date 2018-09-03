@@ -153,10 +153,7 @@ router.post('/forgot', (req, res, next) => {
             transport.sendMail(mailOptions).then((response) => {
                 req.flash('success_msg', `Password Reset Link Sent To ${user.email}. Check Your Email`);
                 res.redirect('/users/forgot');
-            }).catch((e) => {
-                req.flash('error_msg', `Unable To Send Reset Token`);
-                res.redirect('/users/forgot');
-            })
+            });
         })
     })
 });
